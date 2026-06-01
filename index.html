@@ -152,7 +152,6 @@
   <script>
     const CORRECT = String(Math.floor(Math.random() * 10000)).padStart(4, '0');
     let attempts = 0;
-    let locked = false;
     const ids = ['d1','d2','d3','d4'];
 
     ids.forEach((id, i) => {
@@ -176,7 +175,6 @@
     }
 
     function checkPin() {
-      if (locked) { setMsg('Hesap kilitlendi! Sıfırla.', 'warn'); return; }
       const pin = getPin();
       if (pin.length < 4) { setMsg('4 hane giriniz', 'info'); return; }
       attempts++;
@@ -184,23 +182,15 @@
 
       if (pin === CORRECT) {
         setMsg('✓ Doğru PIN! Giriş başarılı.', 'success');
-        locked = true;
       } else {
-        if (attempts >= 5) {
-          setMsg('✗ Çok fazla deneme! Hesap kilitlendi.', 'warn');
-          locked = true;
-          ids.forEach(id => document.getElementById(id).disabled = true);
-          document.getElementById('btnCheck').disabled = true;
-        } else {
-          setMsg(`✗ Yanlış PIN! (${5 - attempts} hakkın kaldı)`, 'error');
-          ids.forEach(id => document.getElementById(id).value = '');
-          document.getElementById('d1').focus();
-        }
+        setMsg(`✗ Yanlış PIN! Tekrar dene.`, 'error');
+        ids.forEach(id => document.getElementById(id).value = '');
+        document.getElementById('d1').focus();
       }
     }
 
     function resetAll() {
-      attempts = 0; locked = false;
+      attempts = 0;
       document.getElementById('attempts').textContent = '0';
       ids.forEach(id => {
         const el = document.getElementById(id);
